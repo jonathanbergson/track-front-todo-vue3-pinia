@@ -1,3 +1,18 @@
+<script setup>
+import { ref } from "vue";
+import { useTodoStore } from "./stores/todo";
+
+const title = "TODO LIST - FRONTEND";
+const text = ref("");
+
+const store = useTodoStore();
+
+function handleSubmit() {
+  store.addItem(text.value);
+  text.value = "";
+}
+</script>
+
 <template>
   <main>
     <div class="header">{{ title }}</div>
@@ -7,47 +22,19 @@
     </form>
 
     <div class="todos-container">
-      <div v-for="item in list" :key="item.id">
+      <div v-for="item in store.list" :key="item.id">
         <input
           type="checkbox"
           :checked="item.done"
-          @input="toggleItem(item.id)"
+          @input="store.toggleItem(item.id)"
         />
         <span :class="{ 'is-done': item.done }">{{ item.text }}</span>
-        <button @click="removeItem(item)">❌</button>
+        <button @click="store.removeItem(item)">❌</button>
       </div>
     </div>
-    <span>Total itens: {{ getCounter }}</span>
+    <span>Total itens: {{ store.getCounter }}</span>
   </main>
 </template>
-
-<script>
-import { mapActions, mapState } from "pinia";
-import { useTodoStore } from "./stores/todo";
-
-export default {
-  name: "App",
-  created() {
-    this.title = "TODO LIST";
-  },
-  data() {
-    return {
-      title: "",
-      text: "",
-    };
-  },
-  computed: {
-    ...mapState(useTodoStore, ["list", "getCounter"]),
-  },
-  methods: {
-    ...mapActions(useTodoStore, ["addItem", "removeItem", "toggleItem"]),
-    handleSubmit() {
-      this.addItem(this.text);
-      this.text = "";
-    },
-  },
-};
-</script>
 
 <style scoped>
 main {
